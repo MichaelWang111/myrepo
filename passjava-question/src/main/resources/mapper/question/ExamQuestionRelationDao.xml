@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.jackson0714.passjava.question.dao.ExamQuestionRelationDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.jackson0714.passjava.question.entity.ExamQuestionRelationEntity" id="examQuestionRelationMap">
+        <result property="id" column="id"/>
+        <result property="questionId" column="question_id"/>
+        <result property="examId" column="exam_id"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="createUser" column="create_user"/>
+        <result property="updateUser" column="update_user"/>
+    </resultMap>
+
+<!--    &lt;!&ndash; 定义selectExamQuestionRelation方法 &ndash;&gt;-->
+<!--    <select id="selectExamQuestionRelation" resultType="com.jackson0714.passjava.question.entity.ExamQuestionRelationEntity">-->
+<!--        SELECT * FROM exam_question_relation-->
+<!--        WHERE exam_id = #{examEntity.id}-->
+<!--          AND question_id = #{questionId}-->
+<!--    </select>-->
+
+<!--    &lt;!&ndash; 定义updateExamQuestionRelation方法 &ndash;&gt;-->
+<!--    <update id="updateExamQuestionRelation">-->
+<!--        UPDATE exam_question_relation-->
+<!--        <set>-->
+<!--            del_flag = 1-->
+<!--        </set>-->
+<!--        WHERE exam_id = #{examEntity.id}-->
+<!--        AND question_id = #{questionId}-->
+<!--    </update>-->
+
+<!--    &lt;!&ndash; 定义insertExamQuestionRelation方法 &ndash;&gt;-->
+<!--    <insert id="insertExamQuestionRelation">-->
+<!--        INSERT INTO exam_question_relation (exam_id, question_id, del_flag)-->
+<!--        VALUES (#{examEntity.id}, #{questionId}, 1)-->
+<!--    </insert>-->
+
+<!--    &lt;!&ndash; 定义saveOrUpdateExamQuestionRelation方法 &ndash;&gt;-->
+<!--    <update id="saveOrUpdateExamQuestionRelation">-->
+<!--        <choose>-->
+<!--            <when test="existingRelation != null">-->
+<!--                &lt;!&ndash; 执行更新操作 &ndash;&gt;-->
+<!--                <include refid="updateExamQuestionRelation" />-->
+<!--            </when>-->
+<!--            <otherwise>-->
+<!--                &lt;!&ndash; 执行插入操作 &ndash;&gt;-->
+<!--                <include refid="insertExamQuestionRelation" />-->
+<!--            </otherwise>-->
+<!--        </choose>-->
+<!--    </update>-->
+
+    <insert id="batchInsertOrUpdateQuestion" parameterType="java.util.List">
+        <foreach collection="list" item="item" separator=";">
+            <if test="item.id != null">
+                UPDATE qms_exam_question_relation SET
+                del_flag = 0,
+                update_time = #{item.updateTime}
+                WHERE question_id = #{item.questionId} AND exam_id = #{item.examId} AND del_flag = 1
+            </if>
+            <if test="item.id == null">
+                INSERT INTO qms_exam_question_relation (question_id, exam_id, create_time, update_time)
+                VALUES (#{item.questionId}, #{item.examId}, #{item.createTime}, #{item.updateTime})
+            </if>
+        </foreach>
+    </insert>
+</mapper>

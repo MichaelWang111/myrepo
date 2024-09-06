@@ -1,0 +1,147 @@
+<!--pages/answer/index.wxml-->
+<view class='page'>
+  <view wx:if='{{ isLoading }}'>
+    <image class='loading' src='../../images/loading.gif'></image>
+  </view>
+  <view wx:if="{{!isLoading && examQuestionsList.length > 0}}">
+  <view wx:if="{{!isLoading }}" class="header-bar"> 
+    <text class="btn-explain" bindtap='displayExplain'>{{explainBtnText}}</text>
+    <text class='clock-text'>{{clock}} </text>
+    <text class="btn-clear-answer" bindtap='clearCacheAnswerClick'>清空</text>
+    <text class="btn-submit" bindtap='submitAnswer'>保存</text>
+  </view>
+  <!--题目-->
+  <view style='padding-bottom:44px;'>
+        <view class="question-list">
+          <view class="question-list-title">
+            <i-tag class="i-tags" name="单选" type="border" color="blue">
+              单选
+            </i-tag>
+            <text class='question-title'>{{questionInfo.question}}</text>
+          </view>
+        </view>
+        
+        <radio-group class="radio-group" bindchange="selectAnswer">
+          <label class="radio" wx:for="{{questionInfo.answerList}}">
+            <radio value="{{item.key}}" position="left" checked="{{item.checked}}"/>{{item.value}}
+          </label>
+        </radio-group>
+
+  <!--答案解释-->
+    <view class="wrap-explain">
+      
+      <view class="txt-explain" wx:if="{{isDisplayExplain}}">
+        <view>正确答案：{{questionInfo.rightAnswer}}</view>
+        <view>选{{questionInfo.explain}}</view>
+      </view>
+      <view class="space" wx:if="{{isDisplayExplain}}">
+      </view>
+    </view>
+    
+
+        <!--底部栏-->
+        <view class='answer-card-bar'>
+          <!-- 分页 -->
+          <i-page current="{{ number }}" total="{{ total }}" bind:change="handlePageChange">
+            <view slot="prev">
+              <i-icon type="return"></i-icon>
+              上一题
+            </view>
+            <view slot="content">
+              <i-row>
+                <i-col span="23">
+                  <view>
+                    <button class="footer-defbtn" bindtap='displayAnswerCard'>
+                      <i-icon type="task" size='25' color="#3D971C" class='footer-btn-text' />
+                      <view class='footer-btn-text'>
+                        <text>{{number}}/{{total}}</text>
+                      </view>
+                    </button>
+                  </view>
+                </i-col>
+              </i-row>
+            </view>
+            <view slot="next">
+              <view style='height:100%;'>
+                下一题
+                <i-icon type="enter"></i-icon>
+              </view>
+            </view>
+          </i-page>
+        </view>
+        
+        <view class="answer-card" wx:if="{{ isDisplayAnswerCard}}" bind:cancel="actionCancel">
+          <view class='answer-card-mask' bindtap='hiddenMask'></view>
+          
+          <view class='answer-card-item'>
+            <view class='answer-card-status'>
+              <view class="answer-card-status-text-right">正确:{{rightAnswerCount}}</view>
+              <view class="answer-card-status-text-wrong">错误:{{wrongAnswerCount}}</view>
+              <view class="answer-card-status-text-not-fininshed">未做:{{notFinishedAnswerCount}}</view>
+              <view class="answer-card-status-text-accuracy-rate">正确率:{{accuracyRate}}%</view>
+            </view>
+            <view class="item" wx:for="{{memberAnswers}}">
+              <view class="detail" data-item='{{item}}' bindtap='gotoSelectedQuestion'>
+                <view class="circle-right-answer" wx:if="{{item.answerStatus=='right'}}">
+                  <view class="title">{{item.staticNumber}}</view>
+                  <!-- <image src="../../images/simulatedExamList/right_answer2.png" class="right-answer-image"></image> -->
+                  <view class="title">{{item.choose}}</view>
+                </view>
+                <view class="circle-wrong-answer" wx:if="{{item.answerStatus=='wrong'}}">
+                  <view class="title">{{item.staticNumber}}</view>
+                  <view class="desc">{{item.choose}}>{{item.rightAnswer}}</view>
+                </view>
+                <view class="circle-not-choose" wx:if="{{item.answerStatus=='notFinished'}}">
+                  <view class="title">{{item.staticNumber}}</view>
+                  <view class="desc">{{item.choose}}</view>
+                </view>
+              </view>
+            </view>
+          </view>
+        </view>
+
+        <!-- >
+        <i-action-sheet visible="{{ isDisplayAnswerCard && belongs.type=='daily' }}" bind:cancel="actionCancel" bind:click="actionClickItem" >
+          <view slot="header" style="padding:2px">
+            <view class="i-action-header">
+              <i-row>
+                <i-col span="20" i-class="col-class">
+                  <view class="i-action-header-left">
+                    <text>当前答案： <text class="my-answer">{{choosedAnswers}}</text>
+                    </text>
+                  </view>
+                </i-col>
+                <i-col span="20" i-class="col-class">
+                  <view class="i-action-header-left">
+                    <text>上次答案： <text class="last-answer">{{lastedAnswers}}</text>
+                    </text>
+                  </view>
+                </i-col>
+                <i-col span="20" i-class="col-class">
+                  <view class="i-action-header-left">
+                    <text>参考答案： <text class="right-answer">{{rightAnswers}}</text>
+                    </text>
+                  </view>
+                </i-col>
+                <i-col span="4" i-class="col-class">
+                  <view class="i-action-header-r">
+                    <button style="padding:0px;" bindtap="actionCancel" size="small">关闭</button>
+                  </view>
+                </i-col>
+              </i-row>
+            </view>
+          </view>
+             
+        </i-action-sheet>
+        <-->
+      </view>
+   
+  
+    <view class="space"></view>
+  </view>
+
+ <view class="no-exam-questions" wx:if='{{ !isLoading && examQuestionsList == 0 }}'>
+    <image class='no-exam-questions-image' src='../../images/simulatedExamList/no_exam_questions.png'></image>
+    <label class='no-exam-questions-text'>资源正在更新中~</label>
+  </view>
+</view>

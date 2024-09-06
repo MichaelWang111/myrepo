@@ -1,0 +1,15 @@
+spring:
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 192.168.145.129:8848
+  redis:
+    host: 127.0.0.1
+    port: 6379
+
+logging:
+  level:
+    org:
+      springframework:
+        cloud:
+          gateway: debug

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.jackson0714.passjava</groupId>
+        <artifactId>passjava</artifactId>
+        <version>0.0.1-SNAPSHOT</version>
+    </parent>
+    <artifactId>passjava-member</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <name>passjava-member</name>
+    <description>佳必过-会员服务</description>
+    <packaging>pom</packaging>
+
+    <!-- 添加子模块 -->
+    <modules>
+        <module>passjava-member-core</module>
+        <module>passjava-member-api</module>
+    </modules>
+
+</project>

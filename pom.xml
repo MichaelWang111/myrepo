@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.2.6.RELEASE</version>
+        <relativePath/> <!-- lookup parent from repository -->
+    </parent>
+
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.jackson0714.passjava</groupId>
+    <artifactId>passjava</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <name>passjava</name>
+    <description>佳必过-聚合服务</description>
+    <packaging>pom</packaging>
+
+    <!-- 添加子模块 -->
+    <modules>
+        <!-- renren-fast -->
+        <module>renren-fast</module>
+        <module>renren-generator</module>
+
+        <!-- 服务模块 -->
+        <module>passjava-auth</module>
+        <module>passjava-content</module>
+        <module>passjava-member</module>
+        <module>passjava-question</module>
+        <module>passjava-study</module>
+        <module>passjava-channel</module>
+        <module>passjava-search</module>
+        <module>passjava-gateway</module>
+        <module>passjava-thirdparty</module>
+
+        <!-- 公共模块 -->
+        <module>passjava-common</module>
+        <module>passjava-jwt</module>
+    </modules>
+</project>

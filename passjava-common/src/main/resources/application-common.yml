@@ -1,0 +1,8 @@
+spring:
+  profiles:
+    active: local
+    include: mybatis
+
+logging:
+  level:
+    com.jackson0714.passjava: debug

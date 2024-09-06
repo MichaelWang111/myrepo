@@ -1,0 +1,152 @@
+pipeline {  
+    agent any  
+    parameters {  
+        choice(name: 'ENVIRONMENT', choices: ['passjava研发环境'], description: '请选择环境')
+        gitParameter(
+            name: 'GIT_BRANCH',
+            type: 'PT_BRANCH',
+            branchFilter: 'origin/(.*)',
+            defaultValue: 'develop',
+            sortMode: 'ASCENDING_SMART',
+            quickFilterEnabled: false,
+            selectedValue: 'DEFAULT',
+            tagFilter: '*',
+            description: '请选择部署分支')
+    }
+    // 定义 GitLab 仓库的 URL 和分支  
+    environment {  
+        GIT_URL = 'https://gitcode.net/jackson0714/passjava.git'
+        CREDENTIALS_ID = '2dcbf8b2-6314-4f43-8f52-79ec802f6d14'
+        SSH_URL = getSSHUrl(params.ENVIRONMENT)
+        // 备份 JAR 包的时候会根据这个名字来匹配 apps 目录下的 JAR 包
+        ALL_SERVICE = "content,member,questioin,channel,study,search,thridparty,fast,gateway"
+    }  
+     stages {  
+        stage('获取最新代码') {  
+            steps {  
+                git credentialsId: "${CREDENTIALS_ID}", branch: "${params.GIT_BRANCH}", url: "${GIT_URL}"
+                script {  
+                    // 使用 params 对象获取参数值  
+                    def branchName = params.GIT_BRANCH  
+                    echo "Building branch: ${branchName}"  
+
+                    // 使用 git 插件检出仓库的特定分支  
+                    checkout([  
+                        $class: 'GitSCM',  
+                        branches: [[name: "${branchName}"]],  
+                        doGenerateSubmoduleConfigurations: false,  
+                        extensions: [],  
+                        submoduleCfg: [],  
+                        userRemoteConfigs: [[  
+                            credentialsId: "${CREDENTIALS_ID}", // 在 Jenkins 凭据中定义的 GitLab 凭据 ID  
+                            url: "${GIT_URL}"  
+                        ]]  
+                    ])  
+                }  
+            }  
+        }
+        stage('编译代码') {  
+            steps {  
+                
+                script {  
+                    echo "--------------- 步骤：开始编译 --------------- "
+                    sh 'mvn clean package -U'
+                    echo "--------------- 步骤：编译完成 --------------- "
+                }
+            }  
+        }
+    }
+//     post {
+//         success {
+//             script {
+//                 echo "成功时通知触发构建者"
+//                 emailext(
+//                     subject: "'构建成功通知: ${env.JOB_NAME} - Build # ${env.BUILD_NUMBER}'",
+//                     recipientProviders: [requestor()],
+//                     body: '''${FILE,path="/home/jenkins/email-template/email.html"}''',
+//                     to: 'jackson0585@163.com',
+//                     mimeType: 'text/html'
+//                 )
+//             }
+//         }
+//         failure {
+//             script {
+//                 echo "失败时通知提交者"
+
+//                 def result = generateChangesAndAuthors()
+//                 def changes = result[0]
+//                 def authors = result[1]
+//                 echo "${changes}"
+//                 echo "Authors: ${authors}"
+                
+//                 // 将收件人列表加入环境变量
+//                 def toAddress = authors.join(',')
+//                 echo "代码提交者邮箱：${toAddress}"
+
+//                 // 如果没有找到提交者，则使用默认收件人
+//                 if (toAddress == '') {
+//                     toAddress = 'jackson0585@163.com'
+//                 }
+
+//                 // 发送失败通知邮件
+//                 emailext(
+//                     subject: "'构建失败通知: ${env.JOB_NAME} - Build # ${env.BUILD_NUMBER} - ${currentBuild.currentResult}'",
+//                     recipientProviders: [requestor()],
+//                     body: '''${FILE,path="/home/jenkins/email-template/email-failure.html"}''',
+//                     to: "${toAddress}",
+//                     mimeType: 'text/html'
+//                 )
+//             }
+//         }
+//     }
+}
+
+def generateChangesAndAuthors() {
+    def changes = "Changes:\n"
+    def authors = []
+    build = currentBuild
+    while(build != null && build.result != 'SUCCESS') {
+        changes += "Changes for Build #${build.id}:\n"
+        if(build.changeSets.isEmpty()) {
+            changes += "  * No changes \n"
+        }
+        for (changeLog in build.changeSets) {
+            for(entry in changeLog.items) {
+                def timestamp = entry.timestamp
+                def date = new Date(timestamp)
+                def dateFormat = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+                def formattedDateTime = dateFormat.format(date)
+                changes += "  * 提交时间: ${formattedDateTime}\n"
+                def author = entry.author.fullName
+                changes += "  * 提交者: [${author}]\n"
+                def comment = entry.comment
+                changes += "  * 提交注释: ${comment}"
+                changes += "  * 提交文件列表: \n"
+                for(file in entry.affectedFiles) {
+                    changes += "   * ${file.path}\n"
+                }
+                def authorEmail = entry.authorEmail
+                echo "authorEmail: ${authorEmail}"
+                if (!authors.contains(authorEmail)) {
+                    authors.add(authorEmail)
+                }
+            }
+        }
+        build = build.previousBuild
+    }
+    return [changes, authors]
+}
+
+
+def getSSHUrl(environment) {
+    switch (environment) {
+        case 'passjava研发环境':
+            return 'wukong@192.168.145.129'
+        case 'passjava测试环境':
+            return ''
+        case 'passjavas生产环境':
+            return ''
+        default:
+            error "Unsupported environment: ${environment}"
+    }
+}

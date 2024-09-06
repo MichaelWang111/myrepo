@@ -1,0 +1,15 @@
+spring:
+  profiles:
+    include: common, routers, jwt
+  application:
+      name: passjava-gateway
+server:
+  port: 8060
+
+logging:
+  level:
+    com.jackson0714.passjava: debug
+    org:
+      springframework:
+        cloud:
+          gateway: debug

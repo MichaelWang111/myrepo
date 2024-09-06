@@ -1,0 +1,10 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://192.168.145.129:3306/passjava_sms?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=GMT
+    username: root
+    password: abc123__
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 192.168.145.129:8848

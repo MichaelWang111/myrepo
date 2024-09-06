@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.jackson0714.passjava.question.dao.ExamDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.jackson0714.passjava.question.entity.ExamEntity" id="examMap">
+        <result property="id" column="id"/>
+        <result property="title" column="title"/>
+        <result property="limitTime" column="limit_time"/>
+        <result property="level" column="level"/>
+        <result property="enable" column="enable"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="createUser" column="create_user"/>
+        <result property="updateUser" column="update_user"/>
+    </resultMap>
+
+    <sql id="briefQuestionSql">
+        relation.`id` as relation_id,
+        relation.`question_id` as id,
+		relation.`exam_id`,
+        question.`question`,
+        type.`comments` as type_comments
+    </sql>
+
+    <sql id="detailQuestionSql">
+        relation.`id` as relation_id,
+        relation.`question_id` as id,
+		relation.`exam_id`,
+        question.`question`,
+        question.choose_a,
+        question.choose_b,
+        question.choose_c,
+        question.choose_d,
+        question.right_choose,
+        question.type,
+        question.multiple,
+        type.`comments` as type_comments
+    </sql>
+
+    <select id="queryQuestionsByExamId" resultType="com.jackson0714.passjava.question.entity.QuestionBriefEntity">
+        SELECT
+        <include refid="briefQuestionSql"/>
+        FROM qms_exam_question_relation as relation
+        INNER JOIN qms_exam_question as question ON question.id = relation.question_id
+        INNER JOIN qms_type as type ON question.type = type.id
+        WHERE relation.exam_id = #{id}
+        AND relation.del_flag = 0
+        AND question.enable = 1
+        <if test="params.key != null and params.key != ''">
+            AND (question.`id` like CONCAT(CONCAT('%', #{params.key}), '%')
+            OR question.`question` like CONCAT(CONCAT('%', #{params.key}), '%'))
+        </if>
+        <if test="params.type != null and params.type != ''">
+            AND question.`type` = #{params.type}
+        </if>
+    </select>
+
+    <select id="queryDetailQuestionsByExamId" resultType="com.jackson0714.passjava.question.entity.ExamQuestionEntityVO">
+        SELECT
+        <include refid="detailQuestionSql"/>
+        FROM qms_exam_question_relation as relation
+        INNER JOIN qms_exam_question as question ON question.id = relation.question_id
+        INNER JOIN qms_type as type ON question.type = type.id
+        WHERE relation.exam_id = #{id}
+        AND relation.del_flag = 0
+        AND question.enable = 1
+    </select>
+
+</mapper>

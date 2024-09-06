@@ -1,0 +1,8 @@
+spring:
+  profiles:
+    include: common
+  application:
+    name: passjava-study
+
+server:
+  port: 12200

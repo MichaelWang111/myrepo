@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.jackson0714.passjava.question.dao.ExamQuestionDao">
+
+    <!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.jackson0714.passjava.question.entity.ExamQuestionEntity" id="examQuestionMap">
+        <result property="id" column="id"/>
+        <result property="question" column="question"/>
+        <result property="chooseA" column="choose_a"/>
+        <result property="chooseB" column="choose_b"/>
+        <result property="chooseC" column="choose_c"/>
+        <result property="chooseD" column="choose_d"/>
+        <result property="rightChoose" column="right_choose"/>
+<!--    <result property="rightChoose" column="right_choose" javaType="java.util.List" jdbcType="VARCHAR" typeHandler="com.jackson0714.passjava.question.config.StringListTypeHandler" />-->
+        <result property="type" column="type"/>
+        <result property="multiple" column="multiple"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="createUser" column="create_user"/>
+        <result property="updateUser" column="update_user"/>
+        <result property="enable" column="enable"/>
+    </resultMap>
+
+    <sql id="questionSql">
+        qms_exam_question.`id`,
+        qms_exam_question.`question`,
+        qms_exam_question.`choose_a`,
+        qms_exam_question.`choose_b`,
+        qms_exam_question.`choose_c`,
+        qms_exam_question.`choose_d`,
+        qms_exam_question.`right_choose`,
+        qms_exam_question.`type`,
+        qms_exam_question.`multiple`,
+        qms_exam_question.`enable`,
+        qms_exam_question.`del_flag`,
+        qms_exam_question.`create_time`,
+        qms_exam_question.`update_time`,
+        qms_exam_question.`create_user`,
+        qms_exam_question.`update_user`,
+		qms_type.`comments` as type_comments
+    </sql>
+
+    <select id="selectPage1" resultType="com.jackson0714.passjava.question.entity.ExamQuestionEntity">
+        SELECT
+        <include refid="questionSql"/>
+        FROM qms_exam_question
+        INNER JOIN qms_type ON qms_exam_question.type = qms_type.id
+        <where>
+            <if test="params.key != null and params.key != ''">
+                AND (qms_exam_question.`id` like CONCAT(CONCAT('%', #{params.key}), '%')
+                OR qms_exam_question.`question` like CONCAT(CONCAT('%', #{params.key}), '%'))
+            </if>
+            <if test="params.type != null and params.type != ''">
+                AND qms_exam_question.`type` = #{params.type}
+            </if>
+        </where>
+    </select>
+
+</mapper>
